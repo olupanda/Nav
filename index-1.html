@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+    <title>my map</title>
+    
+    
+
+
+	
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<head>
+
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
+    <link rel="stylesheet" href="L.Control.SlideMenu.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+   
+
+    <div class="topnav" id="myTopnav">
+  <a href="#home" class="active">Home</a>
+  <a href="#news">About</a>
+  <a href="#contact">Contacts</a>
+  
+  <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+
+  <style>
+    /* Add styles for the header and footer */
+    header {
+      background-color:blue;
+      padding: 5px;
+      text-align: center;
+    }
+
+    
+    /* Add styles for the map */
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Add header -->
+  <header>
+    <h1>My Webpage</h1>
+  </header>
+
+  <!-- Add contents -->
+  <div class="contents">
+    <h2>Contents</h2>
+    <p>Welcome to my webpage! This is where you'll find information about me and my interests.</p>
+  </div>
+
+  <!-- Add map -->
+  <div id = "map" style = "width: 6000px; height: 400px"></div>
+    
+    <script>
+// Creating map options
+ var mapOptions = {
+ center: [-0.4371, 36.9580], 
+ zoom:9
+ }
+ 
+// Creating a map object
+ var map = new L.map('map', mapOptions);
+ 
+// Creating a Layer object
+ var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+ 
+// Adding layer to the map
+ map.addLayer(osm);
+ 
+    
+    if(!navigator.geolocation) {
+      console.log("Your browser doesn't support geolocation feature")
+    } else{
+      navigator.geolocation.getCurrentPosition(getPosition)
+       }
+       
+       function getPosition(position){
+          // console.long(position)
+           var lat = position.coords.latitude
+           var long = position.coords.longitude
+           var accuracy = position.coords.accuracy
+           
+         var marker = L.marker([-0.4371, 36.9580],{icon:taxiIcon}).addTo(map)
+         var circle = L.circle([lat, long], {radius: accuracy})
+       
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+       
+           console.log("Your coordinate is:lat:"+lat, "long:"+long, "Accuracy:"+accuracy)
+       }
+       
+       var geocoder =L.Control.geocoder().addTo(map);
+    
+      
+   
+    var Esri_WorldStreetMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri — Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+    });
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    });
+    
+    var baseLayers = {
+        "OpenStreetMap": osm,
+        "Satellite":Esri_WorldImagery,
+        "Google Map":Esri_WorldStreetMap,
+    
+    };
+
+    
+    L.control.layers(baseLayers).addTo(map);
+
+
+    var taxiIcon = L.icon({
+        iconUrl : 'taxi.jpg',
+        iconSize : [70,70]
+    }).addTo(map);
+    
+    //map click event
+    map.on('click',function (e){
+      console.log(e)
+      var secondMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map)
+       L.Routing.control({
+      waypoints: [
+        L.latLng(-0.4371, 36.9580),
+        L.latLng(e.latlng.lat, e.latlng.lng)
+  ]
+
+       }).on('routesfound',function (e){console.log(e)
+        // e.route[0].coordinates.forEach(function (coord,index){
+        //   setTimeout(()=>{
+        //     marker.setLatlng([coord.lat,coord.lng])
+        //   },100*index);
+          
+        // })
+      })
+
+
+.addTo(map);
+    })
+
+
+
+    //L.Routing.control({
+      //waypoints: [
+       //  L.latLng(-0.2, 36.867),
+       //  L.latLng(0.2, 36.5679)
+  //]
+//}).addTo(map);
+
+
+ </script>
+
+
+ 
+</body>
+</html>
